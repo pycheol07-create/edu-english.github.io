@@ -28,11 +28,10 @@ export default async function handler(request, response) {
     } 
     // 4. '음성 생성(tts)' 요청일 경우 Gemini TTS 모델을 호출합니다.
     else if (action === 'tts') {
-      apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-preview-tts:generateContent?key=${apiKey}`;
+      // ✨ 404 오류를 해결하기 위해, 올바른 모델 이름으로 수정했습니다. ✨
+      apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
       
-      // ✨ 'Puck' 음성 모델을 사용하도록 요청 본문을 수정했습니다. ✨
       apiRequestBody = {
-        model: "gemini-1.5-flash-preview-tts",
         contents: [{
             parts: [{ text: text }]
         }],
