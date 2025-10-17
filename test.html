@@ -1,0 +1,16 @@
+// /api/ping.js
+// 이 파일은 Vercel 서버리스 함수가 정상적으로 실행되는지 확인하기 위한 간단한 테스트용입니다.
+
+export default async function handler(req, res) {
+  // 이 로그가 Vercel 대시보드의 'Logs' 탭에 보이면 서버 기능이 성공적으로 호출된 것입니다.
+  console.log("✅ Ping 함수가 호출되었습니다.");
+
+  // POST 요청만 허용합니다.
+  if (req.method !== 'POST') {
+    res.setHeader('Allow', ['POST']);
+    return res.status(405).end(`Method ${req.method} Not Allowed`);
+  }
+  
+  // 성공적으로 호출되었음을 알리는 JSON 응답을 클라이언트에 보냅니다.
+  res.status(200).json({ message: 'Pong! 서버 함수가 성공적으로 응답했습니다.' });
+}
