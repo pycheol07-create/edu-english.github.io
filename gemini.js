@@ -16,7 +16,7 @@ export default async function handler(request, response) {
     let apiUrl;
     let apiRequestBody;
 
-    // 3. '번역' 요청일 경우 Gemini Pro 모델을 호출합니다.
+    // 3. '번역' 요청일 경우 Gemini 모델을 호출합니다. (이 부분은 정상 작동하므로 유지)
     if (action === 'translate') {
       apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
       apiRequestBody = {
@@ -26,24 +26,24 @@ export default async function handler(request, response) {
         },
       };
     } 
-    // 4. '음성 생성(tts)' 요청일 경우 Gemini TTS 모델을 호출합니다.
+    // 4. '음성 생성(tts)' 요청일 경우, 안정적인 Google Cloud Text-to-Speech API를 호출합니다.
     else if (action === 'tts') {
-      // ✨ 404 오류를 해결하기 위해, 올바른 모델 이름으로 수정했습니다. ✨
-      apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+      // ✨ 404 오류 해결을 위해 안정적인 Text-to-Speech API로 변경했습니다. ✨
+      apiUrl = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`;
       
       apiRequestBody = {
-        contents: [{
-            parts: [{ text: text }]
-        }],
-        generationConfig: {
-            responseModalities: ["AUDIO"],
-            speechConfig: {
-                voiceConfig: {
-                    // 'Puck'이라는 이름의 자연스러운 미국식 영어 음성 모델을 사용하도록 지정
-                    prebuiltVoiceConfig: { voiceName: "Puck" }
-                }
-            }
+        input: {
+          text: text
         },
+        voice: {
+          languageCode: 'en-US', // 언어: 미국식 영어
+          name: 'en-US-Wavenet-D', // 매우 자연스러운 WaveNet 여성 음성
+          ssmlGender: 'MALE'
+        },
+        audioConfig: {
+          audioEncoding: 'LINEAR16', // 프런트엔드에서 처리할 오디오 형식
+          sampleRateHertz: 24000
+        }
       };
     } 
     // 그 외의 요청은 오류 처리
@@ -61,7 +61,6 @@ export default async function handler(request, response) {
     });
 
     if (!apiResponse.ok) {
-      // Google API에서 오류가 발생한 경우, 그 내용을 프런트엔드로 전달합니다.
       const errorText = await apiResponse.text();
       console.error('Google API Error:', errorText);
       throw new Error(`Google API 오류: ${errorText}`);
@@ -69,7 +68,23 @@ export default async function handler(request, response) {
 
     const data = await apiResponse.json();
     
-    // 6. 성공적인 응답을 프런트엔드로 다시 보내줍니다.
+    // ✨ TTS API의 응답 형식을 프런트엔드가 기대하는 Gemini API 형식으로 맞춰줍니다. ✨
+    if (action === 'tts') {
+        return response.status(200).json({
+            candidates: [{
+                content: {
+                    parts: [{
+                        inlineData: {
+                            mimeType: 'audio/wav; rate=24000',
+                            data: data.audioContent // TTS API는 'audioContent' 필드에 base64 데이터를 담아줍니다.
+                        }
+                    }]
+                }
+            }]
+        });
+    }
+
+    // 6. 성공적인 번역 응답을 프런트엔드로 다시 보내줍니다.
     return response.status(200).json(data);
 
   } catch (error) {
