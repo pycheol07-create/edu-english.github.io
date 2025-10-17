@@ -1,96 +1,87 @@
-// Vercel 서버에서 실행되는 코드입니다.
-// 이 파일은 절대 사용자에게 노출되지 않습니다.
+// /api/gemini.js
+// Google Gemini API 요청을 처리하는 서버리스 함수입니다.
 
-export default async function handler(request, response) {
-  // 1. Vercel에 저장된 환경 변수에서 API 키를 안전하게 가져옵니다.
+export default async function handler(req, res) {
+  // Vercel 환경변수에서 API 키를 가져옵니다.
   const apiKey = process.env.GEMINI_API_KEY;
 
+  // API 키가 설정되지 않았을 경우, 명확한 오류 메시지를 반환합니다.
   if (!apiKey) {
-    return response.status(500).json({ error: 'API 키가 설정되지 않았습니다.' });
+    return res.status(500).json({
+      error: "API 키가 서버에 설정되지 않았습니다. Vercel 환경변수를 확인해주세요."
+    });
   }
 
-  // 2. 프런트엔드에서 보낸 요청 데이터를 받습니다.
-  const { action, text, systemPrompt } = request.body;
+  // POST 요청이 아닐 경우, 에러를 반환합니다.
+  if (req.method !== 'POST') {
+    res.setHeader('Allow', ['POST']);
+    return res.status(405).end(`Method ${req.method} Not Allowed`);
+  }
 
   try {
-    let apiUrl;
-    let apiRequestBody;
+    const { action, text, systemPrompt } = req.body;
+    let model;
+    let payload;
 
-    // 3. '번역' 요청일 경우 Gemini Pro 모델을 호출합니다.
-    if (action === 'translate') {
-      apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent?key=${apiKey}`;
-      apiRequestBody = {
-        contents: [{
-          parts: [{ text: `${systemPrompt}\n\n${text}` }]
-        }],
-      };
-    } 
-    // 4. '음성 생성(tts)' 요청일 경우 Text-to-Speech 모델을 호출합니다.
-    else if (action === 'tts') {
-      apiUrl = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`;
-      
-      // ✨ 이 부분이 빠져있던 TTS 요청 본문입니다. ✨
-      // 자연스러운 남성 WaveNet 목소리로 설정
-      apiRequestBody = {
-        input: {
-          text: text
-        },
-        voice: {
-          languageCode: 'cmn-CN',
-          name: 'cmn-CN-Wavenet-B', // 자연스러운 남성 WaveNet 목소리
-          ssmlGender: 'MALE'       // 성별: 남성
-        },
-        audioConfig: {
-          audioEncoding: 'LINEAR16',
-          sampleRateHertz: 24000
-        }
-      };
-    } 
-    // 그 외의 요청은 오류 처리
-    else {
-      return response.status(400).json({ error: '잘못된 요청(action)입니다.' });
+    // 요청 유형(action)에 따라 모델과 payload를 설정합니다.
+    if (action === 'tts') {
+        model = 'gemini-1.5-flash-preview-tts'; // TTS용 모델 지정
+        payload = {
+            contents: [{
+                // 더 자연스러운 발음을 위해 프롬프트 수정
+                parts: [{ text: `Say in a standard American English voice: ${text}` }]
+            }],
+            generationConfig: {
+                responseModalities: ["AUDIO"],
+                speechConfig: {
+                    voiceConfig: {
+                        // 'Puck'이라는 이름의 자연스러운 원어민 음성 모델을 사용하도록 지정
+                        prebuiltVoiceConfig: { voiceName: "Puck" }
+                    }
+                }
+            },
+            model: "gemini-1.5-flash-preview-tts"
+        };
+    } else if (action === 'translate') {
+        model = 'gemini-1.5-flash-latest';
+        payload = {
+            contents: [{ parts: [{ text: text }] }],
+            systemInstruction: {
+                parts: [{ text: systemPrompt }]
+            },
+        };
+    } else {
+      return res.status(400).json({ error: "Invalid action specified." });
     }
 
-    // 5. 설정된 주소와 요청 본문으로 Google API에 실제 요청을 보냅니다.
-    const apiResponse = await fetch(apiUrl, {
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+    // Google API 서버에 요청을 보냅니다.
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(apiRequestBody),
+      body: JSON.stringify(payload),
     });
 
-    if (!apiResponse.ok) {
-      // Google API에서 오류가 발생한 경우, 그 내용을 프런트엔드로 전달합니다.
-      const errorData = await apiResponse.json();
-      console.error('Google API Error:', errorData);
-      throw new Error(`Google API 오류: ${errorData.error.message}`);
+    // API 응답이 성공적이지 않을 경우, 에러를 처리합니다.
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error('Google API Error:', errorBody);
+      return res.status(response.status).json({
+        error: `Google API 호출에 실패했습니다: ${errorBody}`
+      });
     }
 
-    const data = await apiResponse.json();
-    
-    // ✨ 이 부분이 빠져있던 TTS 응답 변환 로직입니다. ✨
-    // TTS API의 응답(data.audioContent)을 프런트엔드가 기대하는 형식으로 맞춰줍니다.
-    if (action === 'tts') {
-        return response.status(200).json({
-            candidates: [{
-                content: {
-                    parts: [{
-                        inlineData: {
-                            mimeType: 'audio/wav; rate=24000',
-                            data: data.audioContent // TTS API는 'audioContent' 필드에 base64 데이터를 담아줍니다.
-                        }
-                    }]
-                }
-            }]
-        });
-    }
-
-    // 6. 성공적인 응답(번역 결과)을 프런트엔드로 다시 보내줍니다.
-    return response.status(200).json(data);
+    const data = await response.json();
+    res.status(200).json(data);
 
   } catch (error) {
-    console.error('서버 함수 오류:', error);
-    return response.status(500).json({ error: error.message });
+    console.error('Server-side error:', error);
+    res.status(500).json({
+      error: `서버 내부 오류가 발생했습니다: ${error.message}`
+    });
   }
 }
+
