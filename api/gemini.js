@@ -19,7 +19,9 @@ export default async function handler(req, res) {
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
-      return res.status(500).json({ error: "API 키가 서버에 설정되지 않았습니다." });
+      // API 키가 없는 경우, Vercel 환경변수 설정을 확인하라는 명확한 메시지를 반환합니다.
+      console.error("GEMINI_API_KEY not found in environment variables.");
+      return res.status(500).json({ error: "서버에 Gemini API 키가 설정되지 않았습니다. Vercel 프로젝트의 'Settings > Environment Variables'에서 GEMINI_API_KEY를 올바르게 설정했는지 확인해주세요." });
     }
 
     let apiUrl = '';
@@ -79,3 +81,4 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: `서버 내부 오류가 발생했습니다: ${error.message}` });
   }
 }
+
