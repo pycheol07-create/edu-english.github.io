@@ -5,6 +5,10 @@
 // 클라이언트(HTML)에서 오는 모든 API 요청을 중계합니다.
 
 export default async function handler(req, res) {
+  // --- [디버깅 로그 1] ---
+  // 이 로그가 보이면 Vercel 서버 함수가 성공적으로 실행된 것입니다.
+  console.log("✅ API 함수 '/api/gemini'가 시작되었습니다.");
+
   // POST 요청만 허용합니다.
   if (req.method !== 'POST') {
     res.setHeader('Allow', ['POST']);
@@ -17,6 +21,14 @@ export default async function handler(req, res) {
 
     // Gemini API 키를 Vercel 환경 변수에서 안전하게 가져옵니다.
     const apiKey = process.env.GEMINI_API_KEY;
+
+    // --- [디버깅 로그 2] ---
+    // 이 로그를 통해 환경변수가 제대로 로드되었는지 확인합니다.
+    if (apiKey) {
+      console.log(`🔑 API 키를 찾았습니다. (시작: ${apiKey.substring(0, 5)}..., 길이: ${apiKey.length})`);
+    } else {
+      console.error("🚨 API 키를 환경변수에서 찾을 수 없습니다!");
+    }
 
     if (!apiKey) {
       // API 키가 없는 경우, Vercel 환경변수 설정을 확인하라는 명확한 메시지를 반환합니다.
