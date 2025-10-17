@@ -1,7 +1,4 @@
 {
-  "name": "daily-english-app",
-  "version": "1.0.0",
-  "engines": {
-    "node": "18.x"
-  }
+  "name": "today-chinese-pattern",
+  "version": "1.0.0"
 }
