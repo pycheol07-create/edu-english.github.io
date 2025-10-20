@@ -52,19 +52,38 @@ function showAlert(message) {
     customAlertModal.classList.remove('hidden');
 }
 
-// --- API 호출 공통 함수 ---
+// --- API 호출 공통 함수 (오류 처리 수정) ---
 async function callGeminiAPI(action, body) {
     const response = await fetch('/api/gemini', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action, ...body })
     });
+
     if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `API ${action} failed`);
+        let errorText = await response.text(); // Get response as text first
+        let errorJson = null;
+        try {
+            // Try to parse it as JSON (for standard API errors)
+            errorJson = JSON.parse(errorText);
+        } catch (e) {
+            // It wasn't JSON (it was "A server error..."), so just use the text
+            console.error("Non-JSON error response from server:", errorText);
+        }
+        
+        // Throw a useful error message
+        if (errorJson && errorJson.error) {
+            throw new Error(errorJson.error);
+        } else {
+            // Truncate long HTML error messages
+            throw new Error(errorText.substring(0, 100) || `API ${action} failed with status ${response.status}`);
+        }
     }
+
+    // If response.ok is true, we assume it's valid JSON
     return response.json();
 }
+
 
 // --- TTS (Text-to-Speech) 함수 ---
 async function playTTS(text, buttonElement) {
@@ -575,4 +594,4 @@ export function initializeApp(patterns) {
 // --- 앱 실행 ---
 initializeApp(patternsData);
 
-// v.2025.10.20_compat-en-main
+// v.2025.10.20_compat-en-main-fix
