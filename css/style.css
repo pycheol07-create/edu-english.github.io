@@ -27,13 +27,35 @@ body {
     animation: pulse 1.5s ease-in-out infinite;
 }
 
-/* --- 채팅 모달 CSS --- */
+/* --- 채팅 모달 CSS (수정됨) --- */
 .chat-bubble-user {
-    @apply bg-blue-500 text-white p-3 rounded-lg max-w-xs md:max-w-md ml-auto;
+    background-color: #3b82f6; /* bg-blue-500 */
+    color: #ffffff; /* text-white */
+    padding: 0.75rem; /* p-3 */
+    border-radius: 0.5rem; /* rounded-lg */
+    max-width: 20rem; /* max-w-xs */
+    margin-left: auto;
+    word-break: break-word; /* 줄바꿈 추가 */
 }
 .chat-bubble-model {
-    @apply bg-gray-200 text-gray-800 p-3 rounded-lg max-w-xs md:max-w-md mr-auto;
+    background-color: #e5e7eb; /* bg-gray-200 */
+    color: #1f2937; /* text-gray-800 */
+    padding: 0.75rem; /* p-3 */
+    border-radius: 0.5rem; /* rounded-lg */
+    max-width: 20rem; /* max-w-xs */
+    margin-right: auto;
+    word-break: break-word; /* 줄바꿈 추가 */
 }
+
+/* md (768px) 이상일 때 max-width 증가 */
+@media (min-width: 768px) {
+    .chat-bubble-user,
+    .chat-bubble-model {
+        max-width: 28rem; /* max-w-md */
+    }
+}
+
+/* --- (이하 동일) --- */
 /* AI 타이핑 인디케이터 */
 @keyframes typing {
     0% { opacity: 0.5; }

@@ -1,45 +1,45 @@
-// --- 1. DOM 요소 변수 선언 ---
-const patternContainer = document.getElementById('pattern-container');
-const currentDateEl = document.getElementById('current-date');
-const newPatternBtn = document.getElementById('new-pattern-btn');
+// --- 1. DOM 요소 변수 선언 (var로 변경) ---
+var patternContainer = document.getElementById('pattern-container');
+var currentDateEl = document.getElementById('current-date');
+var newPatternBtn = document.getElementById('new-pattern-btn');
 
 // 번역기 모달
-const openTranslatorBtn = document.getElementById('open-translator-btn');
-const translatorModal = document.getElementById('translator-modal');
-const closeTranslatorBtn = document.getElementById('close-translator-btn');
-const translateBtn = document.getElementById('translate-btn');
-const koreanInput = document.getElementById('korean-input');
-const translationResult = document.getElementById('translation-result');
+var openTranslatorBtn = document.getElementById('open-translator-btn');
+var translatorModal = document.getElementById('translator-modal');
+var closeTranslatorBtn = document.getElementById('close-translator-btn');
+var translateBtn = document.getElementById('translate-btn');
+var koreanInput = document.getElementById('korean-input');
+var translationResult = document.getElementById('translation-result');
 
 // 알림 모달
-const customAlertModal = document.getElementById('custom-alert-modal');
-const customAlertMessage = document.getElementById('custom-alert-message');
-const customAlertCloseBtn = document.getElementById('custom-alert-close-btn');
+var customAlertModal = document.getElementById('custom-alert-modal');
+var customAlertMessage = document.getElementById('custom-alert-message');
+var customAlertCloseBtn = document.getElementById('custom-alert-close-btn');
 
 // 전체 패턴 모달
-const allPatternsBtn = document.getElementById('all-patterns-btn');
-const allPatternsModal = document.getElementById('all-patterns-modal');
-const closeAllPatternsBtn = document.getElementById('close-all-patterns-btn');
-const allPatternsList = document.getElementById('all-patterns-list');
+var allPatternsBtn = document.getElementById('all-patterns-btn');
+var allPatternsModal = document.getElementById('all-patterns-modal');
+var closeAllPatternsBtn = document.getElementById('close-all-patterns-btn');
+var allPatternsList = document.getElementById('all-patterns-list');
 
 // 채팅 모달
-const openChatBtn = document.getElementById('open-chat-btn');
-const chatModal = document.getElementById('chat-modal');
-const closeChatBtn = document.getElementById('close-chat-btn');
-const chatMessages = document.getElementById('chat-messages');
-const chatInput = document.getElementById('chat-input');
-const sendChatBtn = document.getElementById('send-chat-btn');
-const newChatBtn = document.getElementById('new-chat-btn');
-const stopChatBtn = document.getElementById('stop-chat-btn');
+var openChatBtn = document.getElementById('open-chat-btn');
+var chatModal = document.getElementById('chat-modal');
+var closeChatBtn = document.getElementById('close-chat-btn');
+var chatMessages = document.getElementById('chat-messages');
+var chatInput = document.getElementById('chat-input');
+var sendChatBtn = document.getElementById('send-chat-btn');
+var newChatBtn = document.getElementById('new-chat-btn');
+var stopChatBtn = document.getElementById('stop-chat-btn');
 
-// --- 2. 전역 변수 및 상태 ---
-let learningCounts = {};
-const audioCache = {};
-let currentAudio = null;
-let currentPlayingButton = null;
+// --- 2. 전역 변수 및 상태 (var로 변경) ---
+var learningCounts = {};
+var audioCache = {};
+var currentAudio = null;
+var currentPlayingButton = null;
 
-let chatHistory = [];
-let chatAbortController = null; // 스트리밍 중단을 위한 컨트롤러
+var chatHistory = [];
+var chatAbortController = null; // 스트리밍 중단을 위한 컨트롤러
 
 // --- 3. 헬퍼 함수 (UI/API 제외) ---
 
