@@ -16,7 +16,7 @@ export default async function handler(request, response) {
   const { action, text, systemPrompt, conversationHistory } = request.body;
 
   try {
-    // 모델 목록 가져오기 (이전과 동일)
+    // 모델 목록 가져오기
     const listRes = await fetch(
       `https://generativelanguage.googleapis.com/v1/models?key=${apiKey}`,
       { method: 'GET', signal: controller.signal }
@@ -94,7 +94,7 @@ export default async function handler(request, response) {
       response.end(); // 스트림 종료
 
     } else if (action === 'translate') {
-      // (기존 'translate' 로직 - 변경 없음)
+      // 'translate' 로직
       apiUrl = `https://generativelanguage.googleapis.com/v1/${modelName}:generateContent?key=${apiKey}`;
       apiRequestBody = {
         contents: [
@@ -121,7 +121,7 @@ export default async function handler(request, response) {
       return response.status(200).json(data);
 
     } else if (action === 'tts') {
-      // (기존 'tts' 로직 - 'en-US'로 수정됨)
+      // 'tts' 로직 (en-US로 수정됨)
       apiUrl = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`;
       apiRequestBody = {
         input: { text },
