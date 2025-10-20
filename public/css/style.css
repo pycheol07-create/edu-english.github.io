@@ -1,0 +1,51 @@
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+}
+.english-text {
+    font-family: 'Roboto', sans-serif;
+}
+/* 로딩 스피너 스타일 */
+.loader {
+    border: 4px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 4px solid #3498db;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+/* TTS 재생 중 애니메이션 */
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.7; }
+}
+.tts-btn.is-playing svg {
+    color: #3b82f6; /* Tailwind blue-500 */
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* --- 채팅 모달 CSS --- */
+.chat-bubble-user {
+    @apply bg-blue-500 text-white p-3 rounded-lg max-w-xs md:max-w-md ml-auto;
+}
+.chat-bubble-model {
+    @apply bg-gray-200 text-gray-800 p-3 rounded-lg max-w-xs md:max-w-md mr-auto;
+}
+/* AI 타이핑 인디케이터 */
+@keyframes typing {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+}
+.typing-indicator span {
+    animation: typing 1s infinite;
+}
+.typing-indicator span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0.4s;
+}

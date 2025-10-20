@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오늘의 영어 회화 패턴</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/public/css/style.css">
+</head>
+<body class="bg-gray-100">
+
+    <div class="w-full max-w-3xl mx-auto p-4 md:p-8 py-8">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 english-text">🇺🇸 오늘의 영어 회화 패턴 🇺🇸</h1>
+            <p id="current-date" class="text-gray-500 mt-2"></p>
+        </header>
+
+        <main id="pattern-container" class="space-y-6">
+            </main>
+
+        <footer class="text-center mt-8">
+            <div class="flex justify-center items-center space-x-4">
+                <button id="new-pattern-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 shadow-lg text-lg">
+                    새로운 패턴 보기
+                </button>
+                <button id="all-patterns-btn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 shadow-lg text-lg">
+                    전체 패턴 보기
+                </button>
+            </div>
+            <p class="text-xs text-gray-400 mt-4">매일 자정이 지나면 새로운 패턴이 자동으로 표시됩니다.</p>
+            <p class="text-xs text-gray-400 mt-1">v.2025.10.17-13-en</p>
+        </footer>
+    </div>
+
+    <button id="open-translator-btn" class="fixed bottom-6 right-24 bg-green-500 hover:bg-green-600 text-white font-bold rounded-full w-16 h-16 flex items-center justify-center shadow-xl transition-transform transform hover:scale-110">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+        </svg>
+    </button>
+    
+    <button id="open-chat-btn" class="fixed bottom-6 right-6 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-full w-16 h-16 flex items-center justify-center shadow-xl transition-transform transform hover:scale-110">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.056 3 12c0 2.22.783 4.26 2.073 5.84.288.46.182 1.076-.238 1.488l-.946.945a.75.75 0 00.105 1.25l3.201.64a.75.75 0 00.82-1.018l-.51-1.022a.75.75 0 01.34-1.018c.52-.26 1.08-.46 1.682-.592A8.963 8.963 0 0112 18c1.928 0 3.72-.45 5.25-1.222" />
+        </svg>
+    </button>
+    
+    <div id="translator-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-40">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-lg p-6 relative flex flex-col max-h-[90vh]">
+            <div class="flex-shrink-0">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800">이렇게 말하고 싶어요!</h2>
+                    <button id="close-translator-btn" class="p-1 rounded-full hover:bg-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 text-gray-600">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <p class="text-gray-600 mb-4">자연스러운 원어민 표현이 궁금한 한국어 문장을 입력해보세요.</p>
+                <textarea id="korean-input" class="w-full p-2 border border-gray-300 rounded-md h-24" placeholder="예) 지금 너무 귀찮아서 나중에 씻을거야"></textarea>
+                <button id="translate-btn" class="w-full mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">원어민 표현 찾아보기</button>
+            </div>
+            <div id="translation-result" class="mt-4 p-4 bg-gray-50 rounded-md min-h-[100px] overflow-y-auto">
+                 <p class="text-gray-400 text-center">결과가 여기에 표시됩니다.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="chat-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-40">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-lg p-6 relative flex flex-col max-h-[90vh]">
+            <div class="flex-shrink-0">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800">AI 튜터와 대화하기</h2>
+                    <button id="close-chat-btn" class="p-1 rounded-full hover:bg-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 text-gray-600">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <p class="text-gray-600 mb-4">AI 튜터와 영어로 자유롭게 대화해보세요.</p>
+            </div>
+
+            <div id="chat-messages" class="flex-grow bg-gray-50 rounded-md p-4 space-y-4 overflow-y-auto min-h-[300px]">
+                <div class="chat-bubble-model">
+                    <p class="english-text">Hello! How can I help you practice your English today?</p>
+                </div>
+            </div>
+
+            <div class="flex-shrink-0 mt-4">
+                <div class="flex items-center space-x-2">
+                    <button id="new-chat-btn" class="p-2 text-gray-500 hover:text-blue-500" title="새 대화 시작">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                        </svg>
+                    </button>
+                    <textarea id="chat-input" class="w-full p-2 border border-gray-300 rounded-md h-12 resize-none" placeholder="메시지를 영어로 입력하세요..."></textarea>
+                    <button id="send-chat-btn" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.875L6 12z" />
+                        </svg>
+                    </button>
+                </div>
+                <button id="stop-chat-btn" class="w-full mt-2 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg hidden">
+                    ■ 응답 중지
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="custom-alert-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-sm p-6 text-center">
+            <p id="custom-alert-message" class="text-gray-700 mb-4"></p>
+            <button id="custom-alert-close-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg">확인</button>
+        </div>
+    </div>
+
+    <div id="all-patterns-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-40">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-2xl p-6 relative flex flex-col max-h-[90vh]">
+            <div class="flex-shrink-0">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800">전체 패턴 목록</h2>
+                    <button id="close-all-patterns-btn" class="p-1 rounded-full hover:bg-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 text-gray-600">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <p class="text-gray-600 mb-4">학습하고 싶은 패턴을 선택하세요.</p>
+            </div>
+            <div id="all-patterns-list" class="mt-2 overflow-y-auto divide-y">
+                </div>
+        </div>
+    </div>
+
+    <script src="/public/js/data.js"></script>    <script src="/public/js/ui.js"></script>      <script src="/public/js/api.js"></script>     <script src="/public/js/main.js"></script>    </body>
+</html>
