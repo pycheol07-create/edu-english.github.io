@@ -1,0 +1,39 @@
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+}
+.english-text {
+    font-family: 'Roboto', sans-serif;
+}
+/* 로딩 스피너 스타일 (index.html로 이동) */
+/*
+.loader { ... }
+@keyframes spin { ... }
+*/
+
+/* TTS 재생 중 애니메이션 (index.html로 이동) */
+/*
+@keyframes pulse { ... }
+.tts-btn.is-playing svg { ... }
+*/
+
+/* --- 채팅 모달 CSS (제거) --- */
+/* .chat-bubble-user { ... }
+.chat-bubble-model { ... } 
+@media (min-width: 768px) { ... } 
+*/
+
+/* --- (삭제) AI 타이핑 인디케이터 (신규 main.js에서 처리) --- */
+/*
+@keyframes typing { ... }
+.typing-indicator span { ... }
+.typing-indicator span:nth-child(2) { ... }
+.typing-indicator span:nth-child(3) { ... }
+*/
+
+/* --- (추가) 마이크 녹음 중 스타일 (index.html로 이동했지만, 여기에도 추가) --- */
+/*
+.mic-btn.is-recording svg {
+    color: #ef4444; 
+    animation: pulse 1.2s ease-in-out infinite;
+}
+*/
